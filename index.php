@@ -18,7 +18,7 @@ if (isset($_POST['registr_f'])) {
         $login = mysqli_real_escape_string($link, trim($_POST['login']));
         $email = mysqli_real_escape_string($link, trim($_POST['email']));
         $query = sprintf("SELECT * FROM sars WHERE login='%s' OR email='%s'", $login, $email);
-        $result = mysqli_query($link, $query);
+        $result = mysqli_query($link, $query) or die(mysqli_error($link));
         $result_arr = [];
         while ($row = mysqli_fetch_assoc($result)) {
             $result_arr[] = $row;
@@ -31,11 +31,19 @@ if (isset($_POST['registr_f'])) {
             //вносим данные регистрации в БД
             $name = mysqli_real_escape_string($link, trim($_POST['name']));
             $surname = mysqli_real_escape_string($link, trim($_POST['surname']));
+            $salt = generatorSalt();
+            $password = salt(trim($_POST['password']), $salt);
+            $password = mysqli_real_escape_string($link, $password);
+            $salt = mysqli_real_escape_string($link, $salt);
+            $query = sprintf("INSERT INTO sars (name, surname, login, password, salt, email) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", $name, $surname, $login, $password, $salt, $email);
+            $result = mysqli_query($link, $query) or die(mysqli_error($link));
+            if (mysqli_affected_rows($link) === 1) {
+                echo "Регистрация прошла успешно.";
+                $_SESSION['login'] = $login;
+                $_SESSION['id'] = mysqli_insert_id($link);
+                $_SESSION['auth'] = true;
+            }
 
-            $password = mysqli_real_escape_string($link, $_POST['password']);
-            //$salt = mysqli_real_escape_string($link, $salt]);
-
-            echo "Будем регистрировать";
         }
     } else {
         //не заполнены все поля
