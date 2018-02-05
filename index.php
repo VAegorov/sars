@@ -39,11 +39,11 @@ if (isset($_POST['registr_f'])) {
             $result = mysqli_query($link, $query) or die(mysqli_error($link));
             if (mysqli_affected_rows($link) === 1) {
                 echo "Регистрация прошла успешно.";
+                //авторизуем пользователя через сессию
                 $_SESSION['login'] = $login;
                 $_SESSION['id'] = mysqli_insert_id($link);
                 $_SESSION['auth'] = true;
             }
-
         }
     } else {
         //не заполнены все поля
@@ -57,6 +57,7 @@ if (isset($_POST['registr_f'])) {
 if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
     //пользователь авторизован по сессии
     //подключаем шаблон страницы и в дальнейшем также поступаем для других случаев авторизации др способом
+    include "view/index_v.php";
     include "view/auth_page.php";
 } elseif (!empty($_COOKIE['login']) && !empty($_COOKIE['ikey'])){
     //проверяем авторизацию по cookie
@@ -73,6 +74,7 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
         //пользователь авторизован по cookie и сведения записаны в сессию
         //подключаем шаблон страницы
         include "view/index_v.php";
+        include "view/auth_page.php";
     } else {
         //пользователь никак не авторизован, отображаем страницу для него
         include "view/index_v.php";
