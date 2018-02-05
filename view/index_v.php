@@ -3,8 +3,7 @@
  * Created by PhpStorm.
  * User: PC
  * Date: 05.02.2018
- * Time: 22:05
+ * Time: 22:38
  */
 ?>
-
-<a href="index.php?registr=on">Регистрация</a>
+<h1>Мой сайт</h1>

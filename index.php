@@ -10,11 +10,14 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
+
+
+
 //проверяем авторизацию по сессии
 if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
     //пользователь авторизован по сессии
     //подключаем шаблон страницы и в дальнейшем также поступаем для других случаев авторизации др способом
-
+    include "view/auth_page.php";
 } elseif (!empty($_COOKIE['login']) && !empty($_COOKIE['ikey'])){
     //проверяем авторизацию по cookie
     $login = mysqli_real_escape_string($link, $_COOKIE['login']);
@@ -29,14 +32,24 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
         $_SESSION['auth'] = true;
         //пользователь авторизован по cookie и сведения записаны в сессию
         //подключаем шаблон страницы
+        include "view/index_v.php";
     } else {
         //пользователь никак не авторизован, отображаем страницу для него
-        include "view/no_auth_page.php";
+        include "view/index_v.php";
+        //если поступил запрос на регистрацию
+        if (!empty($_GET['registr']) && $_GET['registr'] === 'on') {
+            //выводим форму для регистрации
+            include "view/form.php";
+        } else include "view/no_auth_page.php";
         exit();
     }
 } else {
     //пользователь никак не авторизован, отображаем страницу для него
-    include "view/no_auth_page.php";
+    include "view/index_v.php";
+    if (!empty($_GET['registr']) && $_GET['registr'] === 'on') {
+        //выводим форму для регистрации
+        include "view/form.php";
+    } else include "view/no_auth_page.php";
     exit();
 }
 
