@@ -10,7 +10,32 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
-
+//если поступила форма регистрации
+if (isset($_POST['registr_f'])) {
+    if (!empty($_POST['registr_f']) && !empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email']) && !empty($_POST['login']) && !empty($_POST['password'])) {
+        //проверяем логин и email на незанятость
+        $login = mysqli_real_escape_string($link, $_POST['login']);
+        $email = mysqli_real_escape_string($link, $_POST['email']);
+        $query = sprintf("SELECT * FROM sars WHERE login='%s' OR email='%s'", $login, $email);
+        $result = mysqli_query($link, $query);
+        $result_arr = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $result_arr[] = $row;
+        }
+        if ($result_arr) {
+            //логин или email заняты
+            $_GET['registr'] = 'on';
+            echo "Указанные логин или email заняты, попробуйте другие!";
+        } else {
+            //вносим данные регистрации в БД
+            echo "Будем регистрировать";
+        }
+    } else {
+        //не заполнены все поля
+        $_GET['registr'] = 'on';
+        echo "Не заполнены все поля!";
+    }
+}
 
 
 //проверяем авторизацию по сессии
