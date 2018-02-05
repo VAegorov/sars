@@ -12,10 +12,11 @@ session_start();
 
 //если поступила форма регистрации
 if (isset($_POST['registr_f'])) {
+    //по правильному надо обрезовать концевые пробелы
     if (!empty($_POST['registr_f']) && !empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email']) && !empty($_POST['login']) && !empty($_POST['password'])) {
         //проверяем логин и email на незанятость
-        $login = mysqli_real_escape_string($link, $_POST['login']);
-        $email = mysqli_real_escape_string($link, $_POST['email']);
+        $login = mysqli_real_escape_string($link, trim($_POST['login']));
+        $email = mysqli_real_escape_string($link, trim($_POST['email']));
         $query = sprintf("SELECT * FROM sars WHERE login='%s' OR email='%s'", $login, $email);
         $result = mysqli_query($link, $query);
         $result_arr = [];
@@ -28,6 +29,12 @@ if (isset($_POST['registr_f'])) {
             echo "Указанные логин или email заняты, попробуйте другие!";
         } else {
             //вносим данные регистрации в БД
+            $name = mysqli_real_escape_string($link, trim($_POST['name']));
+            $surname = mysqli_real_escape_string($link, trim($_POST['surname']));
+
+            $password = mysqli_real_escape_string($link, $_POST['password']);
+            //$salt = mysqli_real_escape_string($link, $salt]);
+
             echo "Будем регистрировать";
         }
     } else {
