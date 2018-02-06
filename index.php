@@ -10,6 +10,15 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
+//Если поступил запрос на выход
+if (!empty($_GET['out']) && $_GET['out'] === 'on') {
+    $_SESSION = [];
+    $_COOKIE = [];
+    //если этого нет основная cookie(session_name) до закрытия браузера никогда не уберется
+    setcookie(session_name(), '', time(), '/');
+    session_destroy();
+}
+
 //если поступила форма авторизации
 if (isset($_POST['auto_f'])) {
     if(!empty($_POST['auto_f']) && !empty($_POST['login']) && !empty($_POST['password'])) {
