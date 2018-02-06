@@ -10,3 +10,4 @@
 <p><a href="">Вход в личный кабинет</a></p>
 <p><a href="index.php?out=on">Выход</a></p>
 <p><a href="index.php?users=on">Список пользователей</a></p>
+<p><a href="index.php?pass=on">Смена пароля</a></p>

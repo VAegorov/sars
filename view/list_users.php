@@ -6,27 +6,32 @@
  * Time: 18:57
  */
 ?>
-
-<h2>Список пользователей</h2>
+<p><a href="index.php">Вернуться на главную</a></p>
+<h2 aling="center">Список пользователей</h2>
 
 <div>
-    <table>
+    <table border="1" cellpadding="8" bordercolor="red" width="100%" cellspacing="0">
         <tr>
-            <th>hhhh</th><th>Логин</th>
+            <th></th>
+            <th>Логин</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>email</th>
         </tr>
         <?php
         foreach ($users as $elem):
             //foreach ($elem as $u):
             ?>
             <tr>
-                <td><?=$i++; ?></td><td><?=$elem['login']; ?></td>
+                <td><?=$i++; ?></td>
+                <td><?=$elem['login']; ?></td>
+                <td><?=$elem['name']; ?></td>
+                <td><?=$elem['surname']; ?></td>
+                <td><?=$elem['email']; ?></td>
             </tr>
-
-
-
         <?php
         endforeach;
-        //endforeach;
         ?>
     </table>
 </div>
+

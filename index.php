@@ -11,7 +11,37 @@ $link = connectBD();
 session_start();
 
 
+//если поступила форма с данными нового пароля пользователя
+if (isset($_POST['pass_change'])) {
+    if (!empty($_POST['new_password']) && !empty($_POST['new_password2']) && !empty($_POST['old_password'])) {
+    $new_password = trim($_POST['new_password']);
+    $new_password2 = trim($_POST['new_password2']);
+    $old_password = trim($_POST['old_password']);
+    if ($new_password !== $new_password2) {
+        echo "Введите два одинаковых значения паспорта!";
+        include "view/pass_change.php";
+    } else {
+        //продолжаем
+        $query = sprintf("SELECT password, salt FROM sars WHERE id='%d'", $_SESSION['id']);
+        $result = mysqli_query($link, $query) or die('Ошибка обработки запроса.');
+        $user = mysqli_fetch_assoc($result);
+        if ($user['password'] === salt($old_password, $user['salt'])) {
 
+            $salt = generatorSalt();
+            $password = mysqli_real_escape_string($link, salt($new_password, $salt));
+            $query = sprintf("UPDATE sars SET password='%s', salt='%s' WHERE id=%d", $password, $salt, $_SESSION['id']);
+            $result = mysqli_query($link, $query) or die('Ошибка обработки запроса.');
+            echo "Пароль сменен успешно";
+        } else {
+            echo "Старый пароль введен неверно.";
+            include "view/pass_change.php";
+        }
+    }
+    } else {
+        echo "Вы не заполнили все поля!";
+        include "view/pass_change.php";
+    }
+}
 
 //Если поступил запрос на выход
 if (!empty($_GET['out']) && $_GET['out'] === 'on') {
@@ -24,7 +54,7 @@ if (!empty($_GET['out']) && $_GET['out'] === 'on') {
 
 //если поступила форма авторизации
 if (isset($_POST['auto_f'])) {
-    if(!empty($_POST['auto_f']) && !empty($_POST['login']) && !empty($_POST['password'])) {
+    if (!empty($_POST['auto_f']) && !empty($_POST['login']) && !empty($_POST['password'])) {
         $login = mysqli_real_escape_string($link, trim($_POST['login']));
         $query = sprintf("SELECT * FROM sars WHERE login='%s'", $login);
         $result = mysqli_query($link, $query) or die(mysqli_error($link));
@@ -150,7 +180,7 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
 
 //если поступил запрос на просмотр списка пользователей
 if (!empty($_GET['users']) && $_GET['users'] === 'on') {
-    $query = "SELECT login, id FROM sars ORDER BY id";
+    $query = "SELECT * FROM sars";
     $result = mysqli_query($link, $query) or die("Ошибка при обработке запроса");
     $users = [];
     while ($row = mysqli_fetch_assoc($result)) {
@@ -158,4 +188,9 @@ if (!empty($_GET['users']) && $_GET['users'] === 'on') {
     }
     $i = 1;
     include "view/list_users.php";
+}
+
+//поступил запрос о смене пароля
+if (!empty($_GET['pass']) && $_GET['pass'] === 'on') {
+    include "view/pass_change.php";
 }
