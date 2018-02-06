@@ -10,6 +10,34 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
+//если посступила форма редактирования
+
+if (isset($_POST['edit'])) {
+    if (!empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email'])) {
+        //проверяем не занят ли вводимый email
+        $new_email = mysqli_real_escape_string($link, trim($_POST['email']));
+        $query = sprintf("SELECT email, id FROM sars WHERE email='%s'", $new_email);
+        $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+        $user = mysqli_fetch_assoc($result);
+        if (!$user || ($user['id']) == $_SESSION['id']) {
+            //редактируем профиль
+            $name = mysqli_real_escape_string($link, trim($_POST['name']));
+            $surname = mysqli_real_escape_string($link, trim($_POST['surname']));
+            $query = sprintf("UPDATE sars SET name='%s', surname='%s', email='%s' WHERE id=%d", $name, $surname, $new_email, $_SESSION['id']);
+            $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.1");
+            if (mysqli_affected_rows($link) == 1) {
+                echo "Изменения успешно внесены.";
+            }
+
+        } else {
+            echo "Введенный email занят, введите другой.";
+            include "view/edit.php";
+        }
+    } else {
+        echo "Вы не заполнили все поля!";
+        include "view/edit.php";
+    }
+}
 
 //если поступила форма с данными нового пароля пользователя
 if (isset($_POST['pass_change'])) {
@@ -31,7 +59,9 @@ if (isset($_POST['pass_change'])) {
             $password = mysqli_real_escape_string($link, salt($new_password, $salt));
             $query = sprintf("UPDATE sars SET password='%s', salt='%s' WHERE id=%d", $password, $salt, $_SESSION['id']);
             $result = mysqli_query($link, $query) or die('Ошибка обработки запроса.');
-            echo "Пароль сменен успешно";
+            if (mysqli_affected_rows($link) == 1) {
+                echo "Пароль сменен успешно";
+            }
         } else {
             echo "Старый пароль введен неверно.";
             include "view/pass_change.php";
@@ -44,7 +74,7 @@ if (isset($_POST['pass_change'])) {
 }
 
 //Если поступил запрос на выход
-if (!empty($_GET['out']) && $_GET['out'] === 'on') {
+if (!empty($_GET['out_page']) && $_GET['out_page'] === 'on') {
     $_SESSION = [];
     $_COOKIE = [];
     //если этого нет, то основная cookie(session_name) до закрытия браузера никогда не уберется
@@ -111,7 +141,7 @@ if (isset($_POST['registr_f'])) {
             $salt = mysqli_real_escape_string($link, $salt);
             $query = sprintf("INSERT INTO sars (name, surname, login, password, salt, email) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", $name, $surname, $login, $password, $salt, $email);
             $result = mysqli_query($link, $query) or die(mysqli_error($link));
-            if (mysqli_affected_rows($link) === 1) {
+            if (mysqli_affected_rows($link) == 1) {
                 echo "Регистрация прошла успешно.";
                 //авторизуем пользователя через сессию
                 $_SESSION['login'] = $login;
@@ -179,7 +209,7 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
 }
 
 //если поступил запрос на просмотр списка пользователей
-if (!empty($_GET['users']) && $_GET['users'] === 'on') {
+if (!empty($_GET['users_page']) && $_GET['users_page'] === 'on') {
     $query = "SELECT * FROM sars";
     $result = mysqli_query($link, $query) or die("Ошибка при обработке запроса");
     $users = [];
@@ -191,6 +221,14 @@ if (!empty($_GET['users']) && $_GET['users'] === 'on') {
 }
 
 //поступил запрос о смене пароля
-if (!empty($_GET['pass']) && $_GET['pass'] === 'on') {
+if (!empty($_GET['pass_page']) && $_GET['pass_page'] === 'on') {
     include "view/pass_change.php";
 }
+
+//если поступил запрос на редактирование
+if (!empty($_GET['edit_page']) && $_GET['edit_page'] === 'on') {
+    //$query
+    include "view/edit.php";
+}
+
+
