@@ -10,11 +10,14 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
+
+
+
 //Если поступил запрос на выход
 if (!empty($_GET['out']) && $_GET['out'] === 'on') {
     $_SESSION = [];
     $_COOKIE = [];
-    //если этого нет основная cookie(session_name) до закрытия браузера никогда не уберется
+    //если этого нет, то основная cookie(session_name) до закрытия браузера никогда не уберется
     setcookie(session_name(), '', time(), '/');
     session_destroy();
 }
@@ -143,4 +146,16 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
         include "view/auth_form.php";
     } else include "view/no_auth_page.php";
 
+}
+
+//если поступил запрос на просмотр списка пользователей
+if (!empty($_GET['users']) && $_GET['users'] === 'on') {
+    $query = "SELECT id, login FROM sars";
+    $result = mysqli_query($link, $query) or die("Ошибка при обработке запроса");
+    $users = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $users[] = $row ;
+
+    }
+    include "view/list_users.php";
 }
