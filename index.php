@@ -150,12 +150,12 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
 
 //если поступил запрос на просмотр списка пользователей
 if (!empty($_GET['users']) && $_GET['users'] === 'on') {
-    $query = "SELECT id, login FROM sars";
+    $query = "SELECT login, id FROM sars ORDER BY id";
     $result = mysqli_query($link, $query) or die("Ошибка при обработке запроса");
     $users = [];
     while ($row = mysqli_fetch_assoc($result)) {
         $users[] = $row ;
-
     }
+    $i = 1;
     include "view/list_users.php";
 }

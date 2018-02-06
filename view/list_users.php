@@ -12,14 +12,14 @@
 <div>
     <table>
         <tr>
-            <th>Логин</th>
+            <th>hhhh</th><th>Логин</th>
         </tr>
         <?php
         foreach ($users as $elem):
             //foreach ($elem as $u):
             ?>
             <tr>
-                <td><?=$elem['login']; ?></td>
+                <td><?=$i++; ?></td><td><?=$elem['login']; ?></td>
             </tr>
 
 
