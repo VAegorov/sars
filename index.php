@@ -16,9 +16,9 @@ if (isset($_POST['edit'])) {
     if (!empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email'])) {
         //проверяем не занят ли вводимый email
         $new_email = mysqli_real_escape_string($link, trim($_POST['email']));
-        $query = sprintf("SELECT email, id FROM sars WHERE email='%s'", $new_email);
+        $query = sprintf("SELECT id FROM sars WHERE email='%s'", $new_email);
         $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
-        $user = mysqli_fetch_assoc($result);
+        $user = mysqli_fetch_assoc($result);// die попробовать
         if (!$user || ($user['id']) == $_SESSION['id']) {
             //редактируем профиль
             $name = mysqli_real_escape_string($link, trim($_POST['name']));
@@ -27,8 +27,9 @@ if (isset($_POST['edit'])) {
             $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.1");
             if (mysqli_affected_rows($link) == 1) {
                 echo "Изменения успешно внесены.";
+            } elseif (mysqli_affected_rows($link) == 0) {
+                echo "Вы ничего не изменили.";
             }
-
         } else {
             echo "Введенный email занят, введите другой.";
             include "view/edit.php";
@@ -227,7 +228,9 @@ if (!empty($_GET['pass_page']) && $_GET['pass_page'] === 'on') {
 
 //если поступил запрос на редактирование
 if (!empty($_GET['edit_page']) && $_GET['edit_page'] === 'on') {
-    //$query
+    $query = sprintf("SELECT email, name, surname FROM sars WHERE id=%d", $_SESSION['id']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса2.");
+    $user = mysqli_fetch_assoc($result) or die("Ошибка обработки запроса1.");
     include "view/edit.php";
 }
 

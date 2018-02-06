@@ -11,4 +11,4 @@
 <p><a href="index.php?out_page=on">Выход</a></p>
 <p><a href="index.php?users_page=on">Список пользователей</a></p>
 <p><a href="index.php?pass_page=on">Смена пароля</a></p>
-<p><a href="index.php?edit_page=on">Редактированть свой профиль</a></p>
+<p><a href="index.php?edit_page=on">Редактировать свой профиль</a></p>
