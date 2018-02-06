@@ -8,3 +8,4 @@
 ?>
 
 <a href="index.php?registr=on">Регистрация</a>
+<a href="index.php?aut=on">Вход</a>

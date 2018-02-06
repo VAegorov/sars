@@ -10,6 +10,38 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
+//если поступила форма авторизации
+if (isset($_POST['auto_f'])) {
+    if(!empty($_POST['auto_f']) && !empty($_POST['login']) && !empty($_POST['password'])) {
+        $login = mysqli_real_escape_string($link, trim($_POST['login']));
+        $query = sprintf("SELECT * FROM sars WHERE login='%s'", $login);
+        $result = mysqli_query($link, $query) or die(mysqli_error($link));
+        $user = mysqli_fetch_assoc($result);
+        if ($user) {
+            $password = trim($_POST['password']);
+            if ($user['password'] === salt($password, $user['salt'])) {
+                //пользователь с такими данными есть, авторизуем его
+                $_SESSION['login'] = $user['login'];
+                $_SESSION['id'] = $user['id'];
+                $_SESSION['auth'] = true;
+            } else {
+                //если пользователя с такими данными нет
+                $_GET['aut'] = 'on';
+                echo "Неправильно указаны логин или пароль!";
+            }
+        } else {
+            //если пользователя с таким логином данными
+            $_GET['aut'] = 'on';
+            echo "Неправильно указаны логин или пароль!";
+        }
+    } else {
+        //не заполнены все поля
+        $_GET['aut'] = 'on';
+        echo "Не заполнены все поля!";
+    }
+}
+
+
 //если поступила форма регистрации
 if (isset($_POST['registr_f'])) {
     //по правильному надо обрезовать концевые пробелы
@@ -82,17 +114,24 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
         if (!empty($_GET['registr']) && $_GET['registr'] === 'on') {
             //выводим форму для регистрации
             include "view/form.php";
+            //если поступил запрос о входе
+        } elseif (!empty($_GET['aut']) && $_GET['aut'] === 'on') {
+            //выводим форму для входа
+            include "view/auth_form.php";
         } else include "view/no_auth_page.php";
-        exit();
+
     }
 } else {
     //пользователь никак не авторизован, отображаем страницу для него
     include "view/index_v.php";
+    //если поступил запрос на регистрацию
     if (!empty($_GET['registr']) && $_GET['registr'] === 'on') {
         //выводим форму для регистрации
         include "view/form.php";
+        //если поступил запрос о входе
+    } elseif (!empty($_GET['aut']) && $_GET['aut'] === 'on') {
+        //выводим форму для входа
+        include "view/auth_form.php";
     } else include "view/no_auth_page.php";
-    exit();
-}
 
-echo "Страница index.php.<br>";
+}
