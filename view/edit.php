@@ -11,9 +11,9 @@
 
 <form action="index.php" method="POST">
 
-    <p><input type="text" name="name" value="<?=$user['name']; ?>"></p>
-    <p><input type="text" name="surname" value="<?=$user['surname']; ?>"></p>
-    <p><input type="text" name="email" value="<?=$user['email']; ?>"></p>
+    <p>Укажите желаемое имя <input type="text" name="name" value="<?=$user['name']; ?>"></p>
+    <p>Укажите желаемую Фамилию <input type="text" name="surname" value="<?=$user['surname']; ?>"></p>
+    <p>Укажите желаемый email <input type="text" name="email" value="<?=$user['email']; ?>"></p>
     <input type="submit" name="edit">
 
 

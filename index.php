@@ -10,33 +10,55 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
-//если посступила форма редактирования
+//если поступила форма на удаление аккаутна
+if (isset($_POST['delete'])) {
+    if (!empty($_POST['password'])) {
+        $password = mysqli_real_escape_string($link, trim($_POST['password']));
+        $query = sprintf("SELECT salt, password FROM sars WHERE id=%d", $_SESSION['id']);
+        $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+        $user = mysqli_fetch_assoc($result);
+        if ($user['password'] === salt(trim($_POST['password']), $user['salt'])) {
+            //Пароль совпал, удаляем аккаунт
+            $query = sprintf("DELETE FROM sars WHERE id=%d", $_SESSION['id']);
+            $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+            if (mysqli_affected_rows($link) == 1) {
+                echo "Аккаунт удален успешно.";
+                $_GET['out_page'] = 'on';
+            }
+        } else {
+            echo "Вы ввели неправильный пароль.";
+            $_GET['delete_page'] = 'on';
+        }
+    }
+}
 
+
+//если посступила форма редактирования
 if (isset($_POST['edit'])) {
     if (!empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email'])) {
         //проверяем не занят ли вводимый email
         $new_email = mysqli_real_escape_string($link, trim($_POST['email']));
         $query = sprintf("SELECT id FROM sars WHERE email='%s'", $new_email);
         $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
-        $user = mysqli_fetch_assoc($result);// die попробовать
+        $user = mysqli_fetch_assoc($result);
         if (!$user || ($user['id']) == $_SESSION['id']) {
             //редактируем профиль
             $name = mysqli_real_escape_string($link, trim($_POST['name']));
             $surname = mysqli_real_escape_string($link, trim($_POST['surname']));
             $query = sprintf("UPDATE sars SET name='%s', surname='%s', email='%s' WHERE id=%d", $name, $surname, $new_email, $_SESSION['id']);
-            $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.1");
+            $result = mysqli_query($link, $query) or die(mysqli_error($link) . "Ошибка обработки запроса.1");
             if (mysqli_affected_rows($link) == 1) {
                 echo "Изменения успешно внесены.";
             } elseif (mysqli_affected_rows($link) == 0) {
                 echo "Вы ничего не изменили.";
             }
         } else {
+            $_GET['edit_page'] = 'on';
             echo "Введенный email занят, введите другой.";
-            include "view/edit.php";
         }
     } else {
+        $_GET['edit_page'] = 'on';
         echo "Вы не заполнили все поля!";
-        include "view/edit.php";
     }
 }
 
@@ -234,4 +256,8 @@ if (!empty($_GET['edit_page']) && $_GET['edit_page'] === 'on') {
     include "view/edit.php";
 }
 
+//если поступил запрос на удаление аккаунта
+if (!empty($_GET['delete_page']) && $_GET['delete_page'] === 'on') {
+    include "view/delit_v.php";
+}
 

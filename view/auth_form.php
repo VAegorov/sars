@@ -6,6 +6,7 @@
  * Time: 11:27
  */
 ?>
+<p><a href="index.php">Вернуться на главную</a></p>
 <h1>Для входа заполните форму</h1>
 <form action="index.php" method="POST">
     <p>Введите  логин <input type="text" name="login"></p>
