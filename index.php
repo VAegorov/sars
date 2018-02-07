@@ -302,3 +302,18 @@ if (!empty($_GET['message']) && $_GET['message'] === 'on') {
     include "view/message.php";
 }
 
+//если поступил запрос о входе в ЛК
+if (!empty($_GET['lk_page']) && $_GET['lk_page'] === 'on') {
+    $query = sprintf("SELECT * FROM sars_mess WHERE recipient_id=%d", $_SESSION['id']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    if (mysqli_affected_rows($link) >= 1) {
+        $i = 1;
+        $message = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $message[] = $row;
+        }
+        include "view/lk.php";
+    } else {
+        echo "Новых сообщений нет";
+    }
+}

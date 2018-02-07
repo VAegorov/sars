@@ -9,7 +9,7 @@
 function connectBD()
 {
     $link = mysqli_connect('localhost', 'root', '', 'test');
-    mysqli_set_charset($link, 'utf-8');
+    mysqli_set_charset($link, 'utf8');
     return $link;
 }
 
