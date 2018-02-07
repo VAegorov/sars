@@ -53,10 +53,12 @@ if (isset($_POST['edit'])) {
                 echo "Вы ничего не изменили.";
             }
         } else {
+            $ed = 1;
             $_GET['edit_page'] = 'on';
             echo "Введенный email занят, введите другой.";
         }
     } else {
+        $ed = 1;
         $_GET['edit_page'] = 'on';
         echo "Вы не заполнили все поля!";
     }
@@ -250,9 +252,16 @@ if (!empty($_GET['pass_page']) && $_GET['pass_page'] === 'on') {
 
 //если поступил запрос на редактирование
 if (!empty($_GET['edit_page']) && $_GET['edit_page'] === 'on') {
-    $query = sprintf("SELECT email, name, surname FROM sars WHERE id=%d", $_SESSION['id']);
-    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса2.");
-    $user = mysqli_fetch_assoc($result) or die("Ошибка обработки запроса1.");
+    if (!empty($ed) && $ed === 1) {
+        $user['name'] = $_POST['name'];
+        $user['surname'] = $_POST['surname'];
+        $user['email'] = $_POST['email'];
+    } else {
+        $query = sprintf("SELECT email, name, surname FROM sars WHERE id=%d", $_SESSION['id']);
+        $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+        $user = mysqli_fetch_assoc($result) or die("Ошибка обработки запроса.");
+    }
+
     include "view/edit.php";
 }
 
