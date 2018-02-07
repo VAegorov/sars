@@ -17,6 +17,7 @@
             <th>Имя</th>
             <th>Фамилия</th>
             <th>email</th>
+            <th>Отправить сообщение</th>
         </tr>
         <?php
         foreach ($users as $elem):
@@ -28,6 +29,7 @@
                 <td><?=$elem['name']; ?></td>
                 <td><?=$elem['surname']; ?></td>
                 <td><?=$elem['email']; ?></td>
+                <td><a href="index.php?message=on&id=<?=$elem['id']; ?>">Отправить сообщение</a></td>
             </tr>
         <?php
         endforeach;

@@ -10,7 +10,34 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
-//если поступила форма на удаление аккаутна
+//если поступила форма об отправлении сообщения
+if (isset($_POST['mess'])) {
+    if (!empty($_POST['message_t'])) {
+        if (trim($_POST['message_t'])) {
+            //отправляем сообщение
+            $message = mysqli_real_escape_string($link, trim($_POST['message_t']));
+            $query = sprintf("INSERT INTO sars_mess (recipient_id, sender_id, message) VALUES (%d, %d, '%s')",
+                $_POST['id'], $_SESSION['id'], $message);
+            $result = mysqli_query($link, $query) or die(mysqli_error($link) . "Ошибка обработки запроса.");
+
+            if (mysqli_affected_rows($link) == 1) {
+                echo "Сообщение отправлено";
+            } else {
+                echo "Системная ошибка. Сообщение не отправлено";
+            }
+        } else {
+           echo "Сообщение пустое, не отправлено.";
+           $_GET['id'] = $_POST['id'];
+           $_GET['message'] = 'on';
+        }
+    } else {
+        echo "Сообщение пустое, не отправлено.";
+        $_GET['id'] = $_POST['id'];
+        $_GET['message'] = 'on';
+    }
+}
+
+//если поступила форма на удаление аккаунта
 if (isset($_POST['delete'])) {
     if (!empty($_POST['password'])) {
         $password = mysqli_real_escape_string($link, trim($_POST['password']));
@@ -268,5 +295,10 @@ if (!empty($_GET['edit_page']) && $_GET['edit_page'] === 'on') {
 //если поступил запрос на удаление аккаунта
 if (!empty($_GET['delete_page']) && $_GET['delete_page'] === 'on') {
     include "view/delit_v.php";
+}
+
+//если поступил запрос на отправку сообщения
+if (!empty($_GET['message']) && $_GET['message'] === 'on') {
+    include "view/message.php";
 }
 
