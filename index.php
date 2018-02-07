@@ -302,6 +302,19 @@ if (!empty($_GET['message']) && $_GET['message'] === 'on') {
     include "view/message.php";
 }
 
+//если поступил запрос на удаление сообщения
+if (!empty($_POST['del_mes'])) {
+    $query = sprintf("DELETE FROM sars_mess WHERE id=%d", $_POST['del_mes']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    if (mysqli_affected_rows($link)) {
+        echo "Сообщение удалено.";
+        $_GET['lk_page'] = 'on';
+    } else {
+        echo "Сообщение не удалено, попробуйте позже.";
+        $_GET['lk_page'] = 'on';
+    }
+}
+
 //если поступил запрос о входе в ЛК
 if (!empty($_GET['lk_page']) && $_GET['lk_page'] === 'on') {
     $query = sprintf("SELECT * FROM sars_mess WHERE recipient_id=%d", $_SESSION['id']);
@@ -317,3 +330,15 @@ if (!empty($_GET['lk_page']) && $_GET['lk_page'] === 'on') {
         echo "Новых сообщений нет";
     }
 }
+
+//если поступил запрос на прочтение одного сообщения
+if (!empty($_POST['one_mes'])) {
+    $query = sprintf("SELECT * FROM sars_mess WHERE id=%d", $_POST['one_mes']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    $message_one = mysqli_fetch_assoc($result);
+    $query = sprintf("UPDATE sars_mess SET read_s='прочитано' WHERE id=%d", $_POST['one_mes']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    include "view/messsage_one.php";
+}
+
+
