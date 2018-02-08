@@ -105,7 +105,7 @@ if (isset($_POST['delete'])) {
 
 //если посступила форма редактирования
 if (isset($_POST['edit'])) {
-    if (!empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email'])) {
+    if (!empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email'])) {//сделать что-то спецефическое чтобы идентифицировать поступление от админа по сессии и статусу
         //проверяем не занят ли вводимый email
         $new_email = mysqli_real_escape_string($link, trim($_POST['email']));
         $query = sprintf("SELECT id FROM sars WHERE email='%s'", $new_email);
@@ -119,7 +119,7 @@ if (isset($_POST['edit'])) {
             $result = mysqli_query($link, $query) or die(mysqli_error($link) . "Ошибка обработки запроса.1");
             if (mysqli_affected_rows($link) == 1) {
                 echo "Изменения успешно внесены.";
-            } elseif (mysqli_affected_rows($link) == 0) {
+            } elseif (mysqli_affected_rows($link) == 0) {//перенаправление сделать на страницу админки
                 echo "Вы ничего не изменили.";
             }
         } else {
@@ -330,13 +330,13 @@ if (!empty($_GET['pass_page']) && $_GET['pass_page'] === 'on') {
 }
 
 //если поступил запрос на редактирование
-if (!empty($_GET['edit_page']) && $_GET['edit_page'] === 'on') {
+if (!empty($_GET['edit_page']) && $_GET['edit_page'] === 'on' && !empty($_GET['id'])) {
     if (!empty($ed) && $ed === 1) {
         $user['name'] = $_POST['name'];
         $user['surname'] = $_POST['surname'];
         $user['email'] = $_POST['email'];
     } else {
-        $query = sprintf("SELECT email, name, surname FROM sars WHERE id=%d", $_SESSION['id']);
+        $query = sprintf("SELECT email, name, surname FROM sars WHERE id=%d", $_GET['id']);
         $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
         $user = mysqli_fetch_assoc($result) or die("Ошибка обработки запроса.");
     }
