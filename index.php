@@ -12,6 +12,20 @@ session_start();
 
 
 $status_arr = [2, 10];
+
+//если поступила форма бана от администратора
+if (!empty($_POST['ban_admin'])) {
+    $query = sprintf("UPDATE sars SET banned=1 WHERE id=%d", (int) $_POST['ban_admin']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    if (mysqli_affected_rows($link) == 1) {
+        echo "Пользователь забанен.";
+        $_GET['admin_page'] = 'on';
+    } else {
+        echo "Неудача, попробуйте попозже.";
+        $_GET['admin_page'] = 'on';
+    }
+}
+
 //если поступила форма об отправлении сообщения
 if (isset($_POST['mess'])) {
     if (!empty($_POST['message_t'])) {
@@ -153,7 +167,7 @@ if (!empty($_GET['out_page']) && $_GET['out_page'] === 'on') {
 if (isset($_POST['auto_f'])) {
     if (!empty($_POST['auto_f']) && !empty($_POST['login']) && !empty($_POST['password'])) {
         $login = mysqli_real_escape_string($link, trim($_POST['login']));
-        $query = sprintf("SELECT * FROM sars WHERE login='%s'", $login);
+        $query = sprintf("SELECT * FROM sars WHERE login='%s' AND banned!=1", $login);
         $result = mysqli_query($link, $query) or die(mysqli_error($link));
         $user = mysqli_fetch_assoc($result);
         if ($user) {
@@ -239,7 +253,7 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
     //проверяем авторизацию по cookie
     $login = mysqli_real_escape_string($link, $_COOKIE['login']);
     $ikey = mysqli_real_escape_string($link, $_COOKIE['ikey']);
-    $query = sprintf("SELECT * FROM sars WHERE login='%s' and ikey='%s'", $login, $ikey);
+    $query = sprintf("SELECT * FROM sars WHERE login='%s' AND ikey='%s' AND banned!=1", $login, $ikey);
     $result = mysqli_query($link, $query);
     $user = mysqli_fetch_assoc($result);
     if ($user) {
