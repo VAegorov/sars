@@ -12,6 +12,7 @@
 
 <form id="fo" action="index.php" method="POST"></form>
 <form id="ed" action="index.php" method="GET"></form>
+
 <table border="1" cellpadding="8" bordercolor="#92A319" width="100%" cellspacing="0">
     <tr>
         <th>id</th>
@@ -21,6 +22,7 @@
         <th>удалить</th>
         <th>забанить</th>
         <th>редактировать</th>
+        <th>изменить статус</th>
     </tr>
     <?php
         foreach ($users as $user)://а если переменная пустая или её нет
@@ -38,6 +40,14 @@
         <td>
             <button form="ed" type="submit" name="id" value="<?=$user['id']; ?>">Редактировать</button>
             <input form="ed" name="edit_page" value="on" type="text" hidden>
+        </td>
+        <td>
+            <form action="index.php" method="POST">
+                <button type="submit" name="status" value="<?=1; ?>">Пользователь</button>
+                <button type="submit" name="status" value="<?=2; ?>">Модератор</button>
+                <button type="submit" name="status" value="<?=10; ?>">Администратор</button>
+                <input hidden type="text" name="id" value="<?=$user['id']; ?>">
+            </form>
         </td>
     </tr>
     <?php

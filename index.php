@@ -13,6 +13,20 @@ session_start();
 
 $status_arr = [2, 10];
 
+//если поступает форма от администратора о смене статуса(менять может только администратор, модер - нет)
+if (!empty($_POST['status']) && !empty($_POST['id']) && $_SESSION['status'] == 10) {
+    $query = sprintf("UPDATE sars SET status=%d WHERE id=%d", (int) $_POST['status'], (int) $_POST['id']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    if (mysqli_affected_rows($link) == 1) {
+        echo "Статус успешно изменен.";
+        $_GET['admin_page'] = 'on';
+    } else {
+        echo "Неудача, попробуйте попозже.";
+        $_GET['admin_page'] = 'on';
+    }
+}
+
+
 //если поступила форма бана от администратора
 if (!empty($_POST['ban_admin'])) {
     $query = sprintf("UPDATE sars SET time_banned=%d WHERE id=%d", time() + 3600, (int) $_POST['ban_admin']);
