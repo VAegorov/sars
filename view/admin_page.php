@@ -30,7 +30,10 @@
         <td><?=$user['email']; ?></td>
         <td><?=$user['status']; ?></td>
         <td><button form="fo" type="submit" name="del_admin" value="<?=$user['id']; ?>">Удалить</button></td>
-        <td><button form="fo" type="submit" name="ban_admin" value="<?=$user['id']; ?>">Забанить</button></td>
+        <td>
+            <button <?=$user['ban']; ?> form="fo" type="submit" name="ban_admin" value="<?=$user['id']; ?>">Забанить</button>
+            <button <?=$user['outban']; ?> form="fo" type="submit" name="outban_admin" value="<?=$user['id']; ?>">Разбанить</button>
+        </td>
         <td><button form="fo" type="submit" name="#_admin" value="<?=$user['id']; ?>">Редактировать</button></td>
     </tr>
     <?php

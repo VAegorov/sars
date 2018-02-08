@@ -26,6 +26,19 @@ if (!empty($_POST['ban_admin'])) {
     }
 }
 
+//если поступила форма разбана от администратора
+if (!empty($_POST['outban_admin'])) {
+    $query = sprintf("UPDATE sars SET banned=0 WHERE id=%d", (int) $_POST['outban_admin']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    if (mysqli_affected_rows($link) == 1) {
+        echo "Пользователь разабанен.";
+        $_GET['admin_page'] = 'on';
+    } else {
+        echo "Неудача, попробуйте попозже.";
+        $_GET['admin_page'] = 'on';
+    }
+}
+
 //если поступила форма об отправлении сообщения
 if (isset($_POST['mess'])) {
     if (!empty($_POST['message_t'])) {
@@ -384,7 +397,16 @@ if (!empty($_GET['admin_page']) && $_GET['admin_page'] === 'on') {
     $query = "SELECT * FROM sars";
     $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
     $users = [];
+    $ban = '';
+    $outban = '';
     while ($row = mysqli_fetch_assoc($result)) {
+        if ($row['banned'] == 1) {
+            $row['ban'] = 'hidden';
+            $row['outban'] = '';
+        } else {
+            $row['ban'] = '';
+            $row['outban'] = 'hidden';
+        }
         $users[] = $row;
     }
     include "view/admin_page.php";
