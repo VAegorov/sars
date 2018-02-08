@@ -35,7 +35,10 @@
             <button <?=$user['ban']; ?> form="fo" type="submit" name="ban_admin" value="<?=$user['id']; ?>">Забанить</button>
             <button <?=$user['outban']; ?> form="fo" type="submit" name="outban_admin" value="<?=$user['id']; ?>">Разбанить</button>
         </td>
-        <td><button form="fo" type="submit" name="#_admin" value="<?=$user['id']; ?>">Редактировать</button></td>
+        <td>
+            <button form="ed" type="submit" name="id" value="<?=$user['id']; ?>">Редактировать</button>
+            <input form="ed" name="edit_page" value="on" type="text" hidden>
+        </td>
     </tr>
     <?php
     endforeach;

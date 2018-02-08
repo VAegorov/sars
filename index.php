@@ -105,13 +105,13 @@ if (isset($_POST['delete'])) {
 
 //если посступила форма редактирования
 if (isset($_POST['edit'])) {
-    if (!empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email'])) {//сделать что-то спецефическое чтобы идентифицировать поступление от админа по сессии и статусу
+    if (!empty($_POST['name']) && !empty($_POST['surname']) && !empty($_POST['email']) && !empty($_POST['id'])) {//сделать что-то спецефическое чтобы идентифицировать поступление от админа по сессии и статусу
         //проверяем не занят ли вводимый email
         $new_email = mysqli_real_escape_string($link, trim($_POST['email']));
         $query = sprintf("SELECT id FROM sars WHERE email='%s'", $new_email);
         $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
         $user = mysqli_fetch_assoc($result);
-        if (!$user || ($user['id']) == $_SESSION['id']) {
+        if (!$user || ($user['id']) == $_POST['id']) {
             //редактируем профиль
             $name = mysqli_real_escape_string($link, trim($_POST['name']));
             $id = mysqli_real_escape_string($link, trim($_POST['id']));
@@ -120,7 +120,11 @@ if (isset($_POST['edit'])) {
             $result = mysqli_query($link, $query) or die(mysqli_error($link) . "Ошибка обработки запроса.1");
             if (mysqli_affected_rows($link) == 1) {
                 echo "Изменения успешно внесены.";
-            } elseif (mysqli_affected_rows($link) == 0) {//перенаправление сделать на страницу админки
+                if (isAccess($status_arr) && $_SESSION['id'] != $id) {
+                    //перенаправление для админа, который редактирует не свою страницу
+                    $_GET['admin_page'] = 'on';
+                }
+            } elseif (mysqli_affected_rows($link) == 0) {
                 echo "Вы ничего не изменили.";
             }
         } else {
