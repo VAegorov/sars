@@ -415,5 +415,17 @@ if (!empty($_GET['admin_page']) && $_GET['admin_page'] === 'on') {
         }
         $users[] = $row;
     }
+    $administrator = 0;
+    $moderator = 0;
+    $us = 0;
+    $query = "SELECT COUNT(*) as count FROM sars WHERE status=10";
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    $administrator = mysqli_fetch_assoc($result)['count'];
+    $query = "SELECT COUNT(*) as count FROM sars WHERE status=2";
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    $moderator = mysqli_fetch_assoc($result)['count'];
+    $query = "SELECT COUNT(*) as count FROM sars WHERE status=1";
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    $us = mysqli_fetch_assoc($result)['count'];
     include "view/admin_page.php";
 }
