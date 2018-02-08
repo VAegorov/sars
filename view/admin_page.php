@@ -11,6 +11,7 @@
 <h1>Страница администратора</h1>
 
 <form id="fo" action="index.php" method="POST"></form>
+<form id="ed" action="index.php" method="GET"></form>
 <table border="1" cellpadding="8" bordercolor="#92A319" width="100%" cellspacing="0">
     <tr>
         <th>id</th>

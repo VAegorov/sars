@@ -114,8 +114,9 @@ if (isset($_POST['edit'])) {
         if (!$user || ($user['id']) == $_SESSION['id']) {
             //редактируем профиль
             $name = mysqli_real_escape_string($link, trim($_POST['name']));
+            $id = mysqli_real_escape_string($link, trim($_POST['id']));
             $surname = mysqli_real_escape_string($link, trim($_POST['surname']));
-            $query = sprintf("UPDATE sars SET name='%s', surname='%s', email='%s' WHERE id=%d", $name, $surname, $new_email, $_SESSION['id']);
+            $query = sprintf("UPDATE sars SET name='%s', surname='%s', email='%s' WHERE id=%d", $name, $surname, $new_email, $_POST['id']);
             $result = mysqli_query($link, $query) or die(mysqli_error($link) . "Ошибка обработки запроса.1");
             if (mysqli_affected_rows($link) == 1) {
                 echo "Изменения успешно внесены.";
@@ -336,7 +337,7 @@ if (!empty($_GET['edit_page']) && $_GET['edit_page'] === 'on' && !empty($_GET['i
         $user['surname'] = $_POST['surname'];
         $user['email'] = $_POST['email'];
     } else {
-        $query = sprintf("SELECT email, name, surname FROM sars WHERE id=%d", $_GET['id']);
+        $query = sprintf("SELECT id, email, name, surname FROM sars WHERE id=%d", $_GET['id']);
         $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
         $user = mysqli_fetch_assoc($result) or die("Ошибка обработки запроса.");
     }
