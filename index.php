@@ -39,16 +39,29 @@ if (isset($_POST['mess'])) {
     }
 }
 
+//если поступила форма удаления аккаунта некоего пользователя от администратора
+if (!empty($_POST['del_admin'])) {
+    $query = sprintf("DELETE FROM sars WHERE id=%d", (int) $_POST['del_admin']);
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    if (mysqli_affected_rows($link) == 1) {
+        echo "Аккаунт удален успешно.";
+        $_GET['admin_page'] = 'on';
+    } else {
+        echo "Аккаунт не удален, попробуйте попозже.";
+        $_GET['admin_page'] = 'on';
+    }
+}
+
 //если поступила форма на удаление аккаунта
 if (isset($_POST['delete'])) {
     if (!empty($_POST['password'])) {
         $password = mysqli_real_escape_string($link, trim($_POST['password']));
-        $query = sprintf("SELECT salt, password FROM sars WHERE id=%d", $_SESSION['id']);
+        $query = sprintf("SELECT salt, password FROM sars WHERE id=%d", (int) $_SESSION['id']);
         $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
         $user = mysqli_fetch_assoc($result);
         if ($user['password'] === salt(trim($_POST['password']), $user['salt'])) {
             //Пароль совпал, удаляем аккаунт
-            $query = sprintf("DELETE FROM sars WHERE id=%d", $_SESSION['id']);
+            $query = sprintf("DELETE FROM sars WHERE id=%d", (int) $_SESSION['id']);
             $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
             if (mysqli_affected_rows($link) == 1) {
                 echo "Аккаунт удален успешно.";
