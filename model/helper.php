@@ -30,3 +30,24 @@ function salt($password, $salt)
     return md5($password . $salt);
 }
 
+//определяет, является ли админом текущий пользователь
+function isAdmin()
+{
+    if ($_SESSION['status'] == 10) {
+        return true;
+    } else return false;
+}
+
+//проверяет является ли текущий пользователь модератором или администратором и дает ему доступ в этом случае возвращает
+// true, если текущему пользователю доступ разрешен и false — если запрещен. Принимает массив статусов с разрешенным
+//доступом
+function isAccess($status_arr)
+{
+    foreach ($status_arr as $status) {
+       if ($status == $_SESSION['status']) {
+           return true;
+       }
+    } return false;
+}
+
+//

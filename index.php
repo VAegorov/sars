@@ -10,6 +10,8 @@ require_once 'model/helper.php';
 $link = connectBD();
 session_start();
 
+
+$status_arr = [2, 10];
 //если поступила форма об отправлении сообщения
 if (isset($_POST['mess'])) {
     if (!empty($_POST['message_t'])) {
@@ -147,6 +149,7 @@ if (isset($_POST['auto_f'])) {
                 //пользователь с такими данными есть, авторизуем его
                 $_SESSION['login'] = $user['login'];
                 $_SESSION['id'] = $user['id'];
+                $_SESSION['status'] = $user['status'];
                 $_SESSION['auth'] = true;
             } else {
                 //если пользователя с такими данными нет
@@ -191,13 +194,14 @@ if (isset($_POST['registr_f'])) {
             $password = salt(trim($_POST['password']), $salt);
             $password = mysqli_real_escape_string($link, $password);
             $salt = mysqli_real_escape_string($link, $salt);
-            $query = sprintf("INSERT INTO sars (name, surname, login, password, salt, email) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", $name, $surname, $login, $password, $salt, $email);
+            $query = sprintf("INSERT INTO sars (name, surname, login, password, salt, email, status) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', 1)", $name, $surname, $login, $password, $salt, $email);
             $result = mysqli_query($link, $query) or die(mysqli_error($link));
             if (mysqli_affected_rows($link) == 1) {
                 echo "Регистрация прошла успешно.";
                 //авторизуем пользователя через сессию
                 $_SESSION['login'] = $login;
                 $_SESSION['id'] = mysqli_insert_id($link);
+                $_SESSION['status'] = 1;
                 $_SESSION['auth'] = true;
             }
         }
@@ -214,6 +218,9 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
     //пользователь авторизован по сессии
     //подключаем шаблон страницы и в дальнейшем также поступаем для других случаев авторизации др способом
     include "view/index_v.php";
+    if (isAccess($status_arr)) {
+        echo '<p><a href="index.php?admin_page=on">Вход в админку</a></p>';
+    }
     include "view/auth_page.php";
 } elseif (!empty($_COOKIE['login']) && !empty($_COOKIE['ikey'])){
     //проверяем авторизацию по cookie
@@ -226,10 +233,14 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
         //в cookie логин и ikey совпали
         $_SESSION['login'] = $user['login'];
         $_SESSION['id'] = $user['id'];
+        $_SESSION['status'] = $user['status'];
         $_SESSION['auth'] = true;
         //пользователь авторизован по cookie и сведения записаны в сессию
         //подключаем шаблон страницы
         include "view/index_v.php";
+        if (isAccess($status_arr)) {
+            echo '<p><a href="index.php?admin_page=on">Вход в админку</a></p>';
+        }
         include "view/auth_page.php";
     } else {
         //пользователь никак не авторизован, отображаем страницу для него
@@ -341,4 +352,13 @@ if (!empty($_POST['one_mes'])) {
     include "view/messsage_one.php";
 }
 
-
+//если поступил запрос на вход в админку
+if (!empty($_GET['admin_page']) && $_GET['admin_page'] === 'on') {
+    $query = "SELECT * FROM sars";
+    $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
+    $users = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $users[] = $row;
+    }
+    include "view/admin_page.php";
+}
