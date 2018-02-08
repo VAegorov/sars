@@ -15,7 +15,7 @@ $status_arr = [2, 10];
 
 //если поступила форма бана от администратора
 if (!empty($_POST['ban_admin'])) {
-    $query = sprintf("UPDATE sars SET banned=1 WHERE id=%d", (int) $_POST['ban_admin']);
+    $query = sprintf("UPDATE sars SET time_banned=%d WHERE id=%d", time() + 3600, (int) $_POST['ban_admin']);
     $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
     if (mysqli_affected_rows($link) == 1) {
         echo "Пользователь забанен.";
@@ -26,9 +26,10 @@ if (!empty($_POST['ban_admin'])) {
     }
 }
 
+
 //если поступила форма разбана от администратора
 if (!empty($_POST['outban_admin'])) {
-    $query = sprintf("UPDATE sars SET banned=0 WHERE id=%d", (int) $_POST['outban_admin']);
+    $query = sprintf("UPDATE sars SET time_banned=0 WHERE id=%d", (int) $_POST['outban_admin']);
     $result = mysqli_query($link, $query) or die("Ошибка обработки запроса.");
     if (mysqli_affected_rows($link) == 1) {
         echo "Пользователь разабанен.";
@@ -180,7 +181,7 @@ if (!empty($_GET['out_page']) && $_GET['out_page'] === 'on') {
 if (isset($_POST['auto_f'])) {
     if (!empty($_POST['auto_f']) && !empty($_POST['login']) && !empty($_POST['password'])) {
         $login = mysqli_real_escape_string($link, trim($_POST['login']));
-        $query = sprintf("SELECT * FROM sars WHERE login='%s' AND banned!=1", $login);
+        $query = sprintf("SELECT * FROM sars WHERE login='%s' AND time_banned<UNIX_TIMESTAMP()", $login);
         $result = mysqli_query($link, $query) or die(mysqli_error($link));
         $user = mysqli_fetch_assoc($result);
         if ($user) {
@@ -266,7 +267,7 @@ if (!empty($_SESSION['auth']) && $_SESSION['auth'] === true) {
     //проверяем авторизацию по cookie
     $login = mysqli_real_escape_string($link, $_COOKIE['login']);
     $ikey = mysqli_real_escape_string($link, $_COOKIE['ikey']);
-    $query = sprintf("SELECT * FROM sars WHERE login='%s' AND ikey='%s' AND banned!=1", $login, $ikey);
+    $query = sprintf("SELECT * FROM sars WHERE login='%s' AND ikey='%s' AND time_banned<UNIX_TIMESTAMP()", $login, $ikey);
     $result = mysqli_query($link, $query);
     $user = mysqli_fetch_assoc($result);
     if ($user) {
@@ -400,7 +401,7 @@ if (!empty($_GET['admin_page']) && $_GET['admin_page'] === 'on') {
     $ban = '';
     $outban = '';
     while ($row = mysqli_fetch_assoc($result)) {
-        if ($row['banned'] == 1) {
+        if ($row['time_banned'] > time()) {
             $row['ban'] = 'hidden';
             $row['outban'] = '';
         } else {
