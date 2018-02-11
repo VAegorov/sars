@@ -5,4 +5,16 @@
  * Date: 06.02.2018
  * Time: 23:08
  */
-if (time() > 1518111856) echo "бред";
+class Wer
+{
+    public $name;
+
+    public function show()
+    {
+        echo $this->name;
+    }
+}
+
+$one = new Wer;
+//$one->name = 456;
+$one->show();

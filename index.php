@@ -13,6 +13,8 @@ session_start();
 
 $status_arr = [2, 10];
 
+var_dump(getallheaders());
+
 //если поступает форма от администратора о смене статуса(менять может только администратор, модер - нет)
 if (!empty($_POST['status']) && !empty($_POST['id']) && $_SESSION['status'] == 10) {
     $query = sprintf("UPDATE sars SET status=%d WHERE id=%d", (int) $_POST['status'], (int) $_POST['id']);
@@ -192,7 +194,8 @@ if (!empty($_GET['out_page']) && $_GET['out_page'] === 'on') {
     $_SESSION = [];
     $_COOKIE = [];
     //если этого нет, то основная cookie(session_name) до закрытия браузера никогда не уберется
-    setcookie(session_name(), '', time(), '/');
+    //setcookie(session_name(), '', time() - 3600);//если так, то основная сессионная cookie не удалится
+    setcookie(session_name(), '', time() - 3600, '/');
     session_destroy();
 }
 
